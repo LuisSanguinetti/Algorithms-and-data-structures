@@ -1,2 +1,3 @@
+# ignores the files resulted from my tests being the build of the code and the result .txt
 build/
 *.own.txt
