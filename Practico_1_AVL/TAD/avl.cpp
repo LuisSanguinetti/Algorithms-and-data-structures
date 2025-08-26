@@ -48,9 +48,11 @@ void rotacionesIzq(NodoAVL *&pa)
   NodoAVL* r = pa->right;
   NodoAVL* t2 = r->left;
 
+  // rotation
   r->left = pa;
   pa->right = t2;
 
+  // update height
   pa->h = 1 + max(height(pa->left), height(pa->right));
   r->h = 1 + max(height(r->left), height(r->right));
 
@@ -64,9 +66,11 @@ void rotacionesDer(NodoAVL *&pa)
   NodoAVL* l = pa->left;
   NodoAVL* t2 = l->right;
 
+  // rotation
   l->right = pa;
   pa->left = t2;
 
+  // update height
   pa->h = 1 + max(height(pa->left), height(pa->right));
   l->h  = 1 + max(height(l->left),  height(l->right));
 
@@ -76,6 +80,7 @@ void rotacionesDer(NodoAVL *&pa)
 // inserta el nodo en el AVL utilizando recursion
 void insertarAVLRec(NodoAVL *&pa, int x)
 {
+  // caso base crea el nuevo nodo en la posicion que era null ahora hay un nodo
   if (!pa) { pa = new NodoAVL(x); return; }
 
   // Permitir duplicados: iguales van a LA DERECHA
@@ -85,22 +90,37 @@ void insertarAVLRec(NodoAVL *&pa, int x)
   pa->h = 1 + max(height(pa->left), height(pa->right));
   int balance = getBalance(pa);
 
-  // Left heavy
-  if (balance > 1) {
-    if (x < pa->data) { rotacionesDer(pa); }
-    else              { rotacionesIzq(pa->left); rotacionesDer(pa); }
+  // 4 posibles rotaciones izq der pero depende de la altura  porque todas pueden contener 1 o 2 rotaciones
+  // Left heavy 
+  // Caso Izquierda-Izquierda (LL)
+  if (balance > 1 && x < pa->data) {
+    rotacionesDer(pa);
     return;
   }
-  // Right heavy (tratar iguales como derecha)
-  if (balance < -1) {
-    if (x >= pa->data) { rotacionesIzq(pa); }
-    else               { rotacionesDer(pa->right); rotacionesIzq(pa); }
+
+  // Caso Izquierda-Derecha (LR)
+  if (balance > 1 && x > pa->data) {
+    rotacionesIzq(pa->left);
+    rotacionesDer(pa);
+    return;
+  }
+
+  // Caso Derecha-Derecha (RR)
+  if (balance < -1 && x >= pa->data) {
+    rotacionesIzq(pa);
+    return;
+  }
+
+  // Caso Derecha-Izquierda (RL)
+  if (balance < -1 && x < pa->data) {
+    rotacionesDer(pa->right);
+    rotacionesIzq(pa);
     return;
   }
 }
 
 
-// Metodo principal para insertar en el AVL
+// Metodo principal para insertar en el AVL, este no lo hice para avl todavia 
 void insertarAVL(AVL a, int e)
 {
   NodoAVL *curr= a->raiz;
