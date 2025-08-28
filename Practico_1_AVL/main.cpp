@@ -2,10 +2,10 @@
 #include <string>
 #include <iostream>
 #include <limits>
-//#include "TAD/avl.cpp"
-#include "TAD/avl_Profesor.cpp"
+#include "TAD/avl.cpp"
+//#include "TAD/avl_Profesor.cpp"
 using namespace std;
-
+/*
 // codigo profesor avl
 int main()
 {
@@ -24,9 +24,9 @@ int main()
     cout << '\n';
     return 0;
 }
-
+*/
 //mi codigo para el avl
-/*
+
 int main()
 {
     int n;
@@ -45,4 +45,3 @@ int main()
     return 0;
 }
 
-*/
