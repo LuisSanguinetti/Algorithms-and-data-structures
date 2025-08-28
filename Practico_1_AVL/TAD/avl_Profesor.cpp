@@ -105,9 +105,9 @@ bool insertarAVLRec(NodoAVL *&pa, int x, bool &varioAltura)
                         pa->fVal = p2->fVal == 1 ? -1 : 0;
                         p1->fVal = p2->fVal == -1 ? 1 : 0;
                         pa = p2;
-                        return insertado;
+                        //return insertado;
+                        pa->fVal = 0;
                     }
-                    pa->fVal = 0;
                     varioAltura = false;
                     break;
             }
@@ -145,6 +145,7 @@ void inorderAVL(AVL a)
     inorderAVLRec(a->raiz);
 }
 
+/*
 int main()
 {
     AVL a = crearAVL();
@@ -159,3 +160,4 @@ int main()
     inorderAVL(a);
     return 0;
 }
+*/

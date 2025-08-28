@@ -2,8 +2,8 @@
 #include <string>
 #include <iostream>
 #include <limits>
-#include "TAD/avl.cpp"
-//#include "TAD/avl_Profesor.cpp"
+//#include "TAD/avl.cpp"
+#include "TAD/avl_Profesor.cpp"
 using namespace std;
 
 // codigo profesor avl
