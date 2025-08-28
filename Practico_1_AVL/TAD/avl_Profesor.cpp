@@ -59,13 +59,25 @@ bool insertarAVLRec(NodoAVL *&pa, int x, bool &varioAltura)
                         pa = p1;
                     } else {
                         NodoAVL *p2 = p1->der;
-                        p1->der = p2->izq;
-                        p2->izq = p1;
-                        pa->izq = p2->der;
-                        p2->der = pa;
-                        pa->fVal = p2->fVal == -1 ? 1 : 0;
-                        p1->fVal = p2->fVal == 1 ? -1 : 0;
-                        pa = p2;
+                        // ADD: null-guard; fallback to single rotation if needed
+                        if (!p2) {
+                            // single LL as a safe fallback
+                            pa->izq = p1->der;
+                            p1->der = pa;
+                            pa->fVal = 0;
+                            pa = p1;
+                        } else {
+                            p1->der = p2->izq;
+                            p2->izq = p1;
+                            pa->izq = p2->der;
+                            p2->der = pa;
+
+                            // balance updates stay the same
+                            pa->fVal = (p2->fVal == -1 ? 1 : 0);
+                            p1->fVal = (p2->fVal ==  1 ? -1 : 0);
+                            pa = p2;
+                        }
+
                     }
                     pa->fVal = 0;
                     varioAltura = false;
@@ -98,15 +110,25 @@ bool insertarAVLRec(NodoAVL *&pa, int x, bool &varioAltura)
                         pa = p1;
                     } else {
                         NodoAVL *p2 = p1->izq;
-                        p1->izq = p2->der;
-                        p2->der = p1;
-                        pa->der = p2->izq;
-                        p2->izq = pa;
-                        pa->fVal = p2->fVal == 1 ? -1 : 0;
-                        p1->fVal = p2->fVal == -1 ? 1 : 0;
-                        pa = p2;
-                        //return insertado;
-                        pa->fVal = 0;
+                        // ADD: null-guard; fallback to single rotation if needed
+                        if (!p2) {
+                            // single RR as a safe fallback
+                            pa->der = p1->izq;
+                            p1->izq = pa;
+                            pa->fVal = 0;
+                            pa = p1;
+                        } else {
+                            p1->izq = p2->der;
+                            p2->der = p1;
+                            pa->der = p2->izq;
+                            p2->izq = pa;
+
+                            // balance updates stay the same
+                            pa->fVal = (p2->fVal ==  1 ? -1 : 0);
+                            p1->fVal = (p2->fVal == -1 ?  1 : 0);
+                            pa = p2;
+                            pa->fVal = 0; // keep this line
+                        }
                     }
                     varioAltura = false;
                     break;
@@ -145,7 +167,7 @@ void inorderAVL(AVL a)
     inorderAVLRec(a->raiz);
 }
 
-/*
+
 int main()
 {
     AVL a = crearAVL();
@@ -160,4 +182,3 @@ int main()
     inorderAVL(a);
     return 0;
 }
-*/
