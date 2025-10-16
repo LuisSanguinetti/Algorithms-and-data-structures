@@ -13,8 +13,8 @@ class NodoHash {
     public:
         K clave;
         V valor;
-        bool susuki;
-        NodoHash(K clave, V valor) : clave(clave), valor(valor), susuki(false){}
+        bool deleted;
+        NodoHash(K clave, V valor) : clave(clave), valor(valor), deleted(false){}
 };
 
 template<class K, class V>
@@ -25,7 +25,7 @@ private:
     int cantidad;
     int largoArray;
     int maxCant;
-    int (*fHash)(k)
+    int (*fHash)(K);
 
     bool esPrimo(int num)
     {
@@ -52,11 +52,12 @@ private:
         return num;
     }
 public:
-    HashTable(int maxCant, int (*fHash)(k))
+    HashTable(int maxCant, int (*fHash)(K))
     {
         this->cantidad =0;
         this->maxCant=maxCant;
-        this->hash = new NodoHash<K,V>*[this->largoArray]();
+        largoArray = primoSup(maxCant * 2); 
+        hash = new NodoHash<K,V>*[largoArray]();
         this->fHash = fHash;
     }
     ~HashTable()
@@ -75,19 +76,67 @@ public:
     //!EsLleno()
     void add(K clave, V valor)
     {
+        //cosigo posicion
         int posHash = abs(fHash(clave)) % largoArray;
+        // if the hash is already occupied, meaning exists and not deleted
+        while(hash[posHash] && !hash[posHash]->deleted)
+        {
+            // busco siguiente posicion disponible
+            posHash = (posHash + 1)% largoArray;
+        }
+        //porque esto esta aca se supone que busco un hashposhash que no exista ?
+        if(hash[posHash])
+        {
+            delete hash[posHash];
+        }
+        hash[posHash] = new NodoHash<K,V>(clave,valor);
+        cantidad++;
     }
-    void remove(string clave)
+    // pre: existe
+    void remove(K clave)
     {
-        // TODO
+         int posHash = getPosHash(clave);
+        if(posHash==-1)
+        {
+            return;
+        }
+        hash[posHash]->deleted=true;
+
     }
-    int get(string clave)
+
+    // sque los pre existe para todos menos el add usando el get pos hash
+    V get(K clave)
     {
-        // TODO
+        int posHash = getPosHash(clave);
+        if(posHash==-1)
+        {
+            return V();
+        }
+        return hash[posHash]->valor;
     }
-    bool exist(string clave)
+    bool exist(const K& clave)
     {
-        // TODO
+        int posHash = getPosHash(clave);
+        if(posHash==-1)
+        {
+            return false;
+        }
+        return hash[posHash] && !hash[posHash]->deleted;
+    }
+    int getPosHash(const K& clave)
+    {
+        int posHash = abs(fHash(clave))%largoArray;
+        int count =0;
+        while(hash[posHash]&& hash[posHash]->clave!=clave&&count<largoArray)
+        {
+            posHash = (posHash+1)%largoArray;
+            count++;
+        }
+        if(count>=largoArray)
+        {
+            return -1;
+        }
+        return posHash;
     }
 };
 
