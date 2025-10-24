@@ -1,8 +1,8 @@
 *.out
-*.class
-
+*.zip
 # own output files
 *.own.txt
-
+*.txt
 # build folder
 build
+/tests
