@@ -6,18 +6,19 @@
 using namespace std;
 
 template<class T>
-class NodoHeapComp {
+class NodoHeap {
     public:
+        int prioridad;
         T dato;
 
-        NodoHeapComp(T dato) : dato(dato) {}
+        NodoHeap(int prioridad, T dato) : prioridad(prioridad), dato(dato) {}
 };
 
 template<class T>
-class MinHeap
+class Heap
 {
 private:
-    NodoHeapComp<T>** heap;
+    NodoHeap<T>** heap;
     int cantidad;
     int largoMax;
     int (*fComp)(T,T);
@@ -41,7 +42,7 @@ private:
 
     void intercambiar(int a, int b)
     {
-        NodoHeapComp<T>* aux = heap[a];
+        NodoHeap<T>* aux = heap[a];
         heap[a] = heap[b];
         heap[b] = aux;
     }
@@ -57,27 +58,81 @@ private:
             flotar(miPadre);
         }
     }
+
+    // repasar
+    void hundir(int pos)
+    {
+        int miHijoIzq = hijoIzq(pos), miHijoDer = hijoDer(pos);
+        if(miHijoIzq<cantidad)
+        {
+            int minHijo = miHijoIzq;
+            if(miHijoDer<cantidad && heap[miHijoDer]->prioridad<heap[miHijoIzq]->prioridad)
+            {
+                minHijo++;
+            }
+            if(heap[minHijo]->prioridad <= heap[pos]->prioridad)
+            {
+                intercambiar(pos,minHijo);
+                hundir(minHijo);
+            }
+        }
+    }
     
 
 public:
-    MinHeap(int size)
+    Heap(int size)
     {
-        // TODO
+        this->largoMax = largoMax;
+        this->cantidad = 0;
+        this->heap = new NodoHeap<T>*[largoMax]();
     }
-    void insertar(int valor, int listaDeOrigen)
+
+    void ~Heap()
     {
-        // TODO
+        for(int i =0;i<cantidad;i++)
+        {
+            delete heap[i];
+        }
+        delete []heap;
     }
-    int valorTope() {
-        // TODO
-        return 0;
+
+    void insertar(int prioridad, T dato)
+    {
+        // inserto al final
+        heap[cantidad++] = new NodoHeap<T>(prioridad, dato);
+        // lo hago flotar a su posicion
+        flotar(cantidad-1);
     }
+
+    T valorTope() {
+        return heap[0]->dato;
+    }
+
+
     int listaDeOrigenTope() {
-        // TODO
-        return 0;
+        cout << "[";
+        for (int i = 0; i < cantidad-1; i++)
+        {
+            cout << heap[i]->dato << ", ";
+        }
+        if(cantidad>0){
+            cout << heap[cantidad-1]->dato;
+        }
+        cout << "]" << endl;
     }
+
+    // hago que el max remplaze al primero, elimino la memoria del primero y hago null al ultimo y undo al primero a su nueva posicion
     void eliminarTope() {
-        // TODO
+        NodoHeap<T>* aBorrar = heap[0];
+        heap[0]= heap[--cantidad];
+        heap[cantidad]=NULL;
+        delete aBorrar;
+        hundir(0);
+    }
+
+    bool esVacia()
+    {
+        return cantidad ==0;
     }
 };
 
